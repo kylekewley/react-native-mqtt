@@ -24,6 +24,10 @@
     return self;
 }
 
+- (void)dealloc {
+    [self close];
+}
+
 - (void)decodeMessage:(NSData *)data {
     NSInputStream *stream = [NSInputStream inputStreamWithData:data];
     [self openStream:stream];
@@ -138,6 +142,8 @@
         DDLogVerbose(@"[MQTTDecoder] NSStreamEventEndEncountered");
         
         if (self.streams) {
+            [stream setDelegate:nil];
+            [stream close];
             [self.streams removeObject:stream];
             if (self.streams.count) {
                 NSInputStream *stream = [self.streams objectAtIndex:0];
